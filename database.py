@@ -118,7 +118,7 @@ class Operations:
         self.db.session.commit()
         return True
 
-    def remove(self, ClassName, id):  # удаление нашел только по id (оно почему-то не удаляет :( )
+    def remove(self, ClassName, id): 
         try:
             delete = self.tables[ClassName].query.filter_by(id=id).first()
         except ValueError:
