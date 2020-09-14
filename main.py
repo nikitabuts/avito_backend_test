@@ -12,7 +12,8 @@ tables = {
     'user': User
 }
 
-domen_name = 'https://avito-short-test.herokuapp.com/'
+#domen_name = 'https://avito-short-test.herokuapp.com/'
+domen_name = 'http://0.0.0.0:5000/'
 
 ops = Operations(db, tables)
 ops.create_db() 
