@@ -12,7 +12,7 @@ tables = {
     'user': User
 }
 
-domen_name = 'https://avito_short_url_test/'
+domen_name = 'https://avito-short-test.herokuapp.com/'
 
 ops = Operations(db, tables)
 ops.create_db() 
@@ -62,6 +62,17 @@ def authentication():
                 password=password
             )
         )
+    else:
+        filtered_user = ops.db.session.query(
+            tables['user'], 
+        ).filter(
+            tables['user'].nickname == nickname
+        ).filter(
+            tables['user'].password == password
+        )
+
+        if not len(filtered_user.all()):
+            return 'Неверный пароль!'
 
     if url.find("http://") != 0 and url.find("https://") != 0:
         url = "https://" + url
@@ -143,15 +154,19 @@ def redirecting():
 
     if not check_element(table_name='user', var_name=nickname, column_name='nickname'):
         return f'Пользователь {nickname} еще не пользовался сайтом, сначала создайте ссылку'
+
+    filtered_user = ops.db.session.query(
+            tables['user'], 
+        ).filter(
+            tables['user'].nickname == nickname
+        ).filter(
+            tables['user'].password == password
+        )
+
+    if not len(filtered_user.all()):
+        return 'Неверный пароль!'
     
     if re.match(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', short_link) and short_link.find(domen_name) != -1:
-        user_long_links = ops.inner_join(
-                ClassName1='user', 
-                ClassName2='long_link', 
-                column_name_1='id', 
-                column_name_2='user_id'
-            )
-        
         filtered = ops.db.session.query(
             tables['user'], 
             tables['long_link'],
@@ -164,14 +179,21 @@ def redirecting():
             tables['long_link'].id == tables['short_link'].long_id
         ).filter(
             tables['short_link'].short_link == short_link
-        ).all()[0]
+        ).all()
 
-        result = filtered[1].long_link
+        if not len(filtered):
+            return 'Такой ссылки нет в базе данных'
+
+        result = filtered[0][1].long_link
 
         return redirect(result)
     
     else:
         return f'Некорректная ссылка, правильная должна содержать имя домена: {domen_name}'
+
+@app.route('/link/<short_link>')
+def link():
+    pass
 
 
 if __name__ == '__main__': 
