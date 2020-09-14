@@ -16,8 +16,6 @@ domen_name = 'https://avito-short-test.herokuapp.com/'
 
 ops = Operations(db, tables)
 ops.create_db() 
-#ops.appending('user', ops.create_user('Nick', '12345'))
-#ops.appending('user', ops.create_user('Nick2', '12dq345'))
 
 
 def check_element(table_name, var_name, column_name):
@@ -191,9 +189,24 @@ def redirecting():
     else:
         return f'Некорректная ссылка, правильная должна содержать имя домена: {domen_name}'
 
-@app.route('/link/<short_link>')
-def link():
-    pass
+@app.route('/<short_link>')
+def link(short_link):
+    short_link = domen_name + short_link
+
+    filtered = ops.db.session.query(
+        tables['long_link'],
+        tables['short_link']
+    ).join(
+        tables['short_link'],
+        tables['short_link'].long_id == tables['long_link'].id
+    ).filter(
+        tables['short_link'].short_link == short_link
+    ).all()
+
+    if not len(filtered):
+        return 'Такой ссылки нет в браузере'
+
+    return redirect(filtered[0][0].long_link)
 
 
 if __name__ == '__main__': 

@@ -87,7 +87,7 @@ class Operations:
                         self.tables[ClassName2], 
                         column_name_2
                     )
-            )
+                )
         return records
 
     def double_inner_join(self, ClassName1, 
@@ -112,7 +112,6 @@ class Operations:
                 column_name_3
             )
         )
-
 
     def appending(self, ClassName, element):
         self.db.session.add(element)
