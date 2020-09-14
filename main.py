@@ -47,6 +47,15 @@ def authentication():
     url = request.args.get('url') if request.args.get('url') is not None else data['url']
     custom_short = request.args.get('short') if request.args.get('short') is not None else data['short']
 
+    if nickname is None or not len(nickname):
+        return 'Некорректное имя'
+    
+    if password is None or not len(password):
+        return 'Некорректный пароль'
+
+    if url is None or not len(url):
+        return 'Некорректный url'
+
     find_flag = check_element(
         table_name='user', 
         var_name=nickname, 
